@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      background: #235;
+      margin: 20px;
+    }
+
+
+
+    #game {
+      width: 500px;
+      height: 500px;
+      /* background-color: black; */
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      overflow: hidden;
+      margin: auto;
+
+      background: url(./imgs/iceberg.png);
+      /* background: url(./imgs/mandarins.png); */
+      cursor: url(./imgs/cur.png) 12 92, auto;
+    }
+
+    #game img {
+      -webkit-user-drag: none;
+      user-select: none;
+      position: absolute;
+      height: 100px;
+    }
+
+
+    .blood {
+      pointer-events: none;
+    }
+
+    #game .enel {
+      height: 100%;
+      width: 100%;
+      text-align: center;
+      margin: auto;
+    }
+
+    #game .nami {
+      height: 100%;
+      width: 100%;
+      text-align: center;
+      margin: auto;
+    }
+
+    #btn-start {
+      width: 400px;
+      height: 100px;
+      background: #666;
+      text-align: center;
+      margin: auto;
+      position: absolute;
+      left: 40%;
+      top: 5%;
+      color: lightgoldenrodyellow;
+      font-size: 80px;
+      line-height: 100px;
+    }
+
+    p,
+    span {
+      font-size: 25px;
+      color: lightblue;
+      font-weight: 900;
+      text-shadow: 0px 0px 5px aqua;
+    }
+
+
+
+    .m {
+      float: left;
+      position: absolute;
+      color: blueviolet;
+      text-shadow: 1px 1px 5px rgb(2, 20, 19);
+      font-size: 25px;
+    }
+
+    .m img {
+      width: 75px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <p> 分數 <span id="text-score"> 0 </span> 分</p>
+  <p> 時間 <span id="text-time"> 0 </span> 秒</p>
+  <p>最高分玩家: <span id="text-hsname">-</span></p>
+  <p>最高分分數: <span id="text-hsscore">0</span></p>
+
+
+  <br>
+  <br>
+  <br>
+
+  <span id="btn-start"> 開始 </span>
+  <!-- <hr> -->
+  <div class="m">
+    <p>遊戲玩法:</p>
+    <p style="color: blueviolet; text-shadow: 1px 1px 5px rgb(2, 20, 19);">普通點擊 + 1 分</p>
+    <img class="m1" src="./imgs/onepiece14_enel.png" alt="加 10 分" title="加 10 分"> &nbsp;加 10 分
+    <br>
+    <img class="m2" src="./imgs/onepiece03_nami.png" alt="扣 10 分" title="扣 10 分"> &nbsp;扣 10 分
+    <br>
+    <br>
+    <img src="./imgs/food_beef.png" alt=" 加 10 秒 " title="加 10 秒"> &nbsp;加 10 秒
+    <br>
+
+    <div>
+      <img src="./imgs/bakudan.png" alt=" game over" title="game over"> &nbsp;
+      game over
+    </div>
+  </div>
+  <div id="game"> </div>
+
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js'
+    integrity='sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=='
+    crossorigin='anonymous'></script>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.8.0/sweetalert2.all.min.js'
+    integrity='sha512-kY2OrxiNpJswubervGVIAvyPoCg96eSLOjQzskWH4It2x2MUdrCw81VxhhdXrrzfvjVl/J1reYsyRn9Aor+lMQ=='
+    crossorigin='anonymous'></script>
+
+  <script>
+    let score = 0
+    let time = 0
+    let timer = 0
+
+    const hs = {
+      name: '-',
+      score: 0
+    }
+
+
+    let addtime = false
+    let addtime2 = false
+
+    if (localStorage.hs) {
+      const data = JSON.parse(localStorage.hs)
+      hs.name = data.name
+      hs.score = data.score
+      $('#text-hsname').text(hs.name)
+      $('#text-hsscore').text(hs.score)
+
+    }
+
+
+    $('#btn-start').click(function () {
+      $(this).attr('disabled', true)
+      $('body').css('background', '#235')
+      $('#game').css('background', 'url(./imgs/iceberg.png)')
+
+
+      const _this = this
+
+      // $('.hina').css('display', 'block')
+
+
+      score = 0
+      $('#text-score').text(score)
+      time = 12
+      $('#text-time').text(time)
+
+      timer = setInterval(function () {
+        time--
+        $('#text-time').text(time)
+
+        const random = Math.ceil(Math.random() * 12)
+        // const random = 12
+        console.log(random)
+        if (score <= 15) {
+          $('body').css('background', '#235')
+
+          $('#game').css('background', 'url(./imgs/iceberg.png)')
+
+          if (random === 1) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:8%;left:6%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 2) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:8%;left:41%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 3) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:8%;left:73%">`)
+
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 4) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:43%;left:6%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+
+          }
+          if (random === 5) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:43%;left:41%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 6) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:43%;left:73%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+          if (random === 7) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:77%;left:6%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 8) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:77%;left:41%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 9) {
+            const hina = $(`<img class="hina" src="./imgs/animal_koutei_penguin_hina.png" style = "top:77%;left:73%">`)
+            $('#game').append(hina)
+
+            setTimeout(function () {
+              hina.remove()
+            }, 1000)
+          }
+
+          if (random === 10) {
+            const enel = $(`<img class="enel" src="./imgs/onepiece14_enel.png"  style="top:0;left:0">`)
+            $('#game').append(enel)
+
+            setTimeout(function () {
+              enel.remove()
+            }, 800)
+
+          }
+
+
+          if (random === 11) {
+            const value = [8, 43, 77]
+            const RT = value[Math.floor(Math.random() * value.length)]
+            const RL = value[Math.floor(Math.random() * value.length)] - 9
+
+            console.log(RT, RL)
+            const beef = $(`<img class="beef" src="./imgs/food_beef.png" style="top:${RT}%;left:${RL}%">`)
+            $('#game').append(beef)
+
+            setTimeout(function () {
+              beef.remove()
+            }, 750)
+
+          }
+
+          if (random === 12) {
+            const value = [8, 43, 77]
+            const RT = value[Math.floor(Math.random() * value.length)]
+            const RL = value[Math.floor(Math.random() * value.length)] - 2
+
+            console.log(RT, RL)
+            const baku = $(`<img class="baku" src="./imgs/bakudan.png" style="top:${RT}%;left:${RL}%">`)
+            // const baku = $(`<img class="baku" src="./imgs/bakudan.png" style="top:77%;left:75%">`)
+            $('#game').append(baku)
+
+            setTimeout(function () {
+              baku.remove()
+            }, 750)
+
+          }
+
+
+        } else if (score > 15) {
+          $('body').css('background', ' rgba(21, 39, 9, 0.8)')
+          $('#game').css('background', 'url(./imgs/mandarins.png)')
+
+          $('#game .hina, #game .blood').remove();
+
+
+          if (random === 1) {
+
+
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:8%;left:6%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 2) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:8%;left:41%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 3) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:8%;left:73%">`)
+
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 4) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:43%;left:6%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+
+          }
+          if (random === 5) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:43%;left:41%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 6) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:43%;left:73%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+          if (random === 7) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:77%;left:6%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 8) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:77%;left:41%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 9) {
+            const orange = $(`<img class="orange" src="./imgs/fruit_orange.png" style = "top:77%;left:73%">`)
+            $('#game').append(orange)
+
+            setTimeout(function () {
+              orange.remove()
+            }, 800)
+          }
+
+          if (random === 10) {
+            const nami = $(`<img class="nami" src="./imgs/onepiece03_nami.png"  style="top:0;left:0">`)
+            $('#game').append(nami)
+
+            setTimeout(function () {
+              nami.remove()
+            }, 500)
+
+          }
+
+
+          if (random === 11) {
+            const value = [8, 43, 77]
+            const RT = value[Math.floor(Math.random() * value.length)]
+            const RL = value[Math.floor(Math.random() * value.length)] - 9
+
+            console.log(RT, RL)
+            const beef = $(`<img class="beef" src="./imgs/food_beef.png" style="top:${RT}%;left:${RL}%">`)
+            $('#game').append(beef)
+
+            setTimeout(function () {
+              beef.remove()
+            }, 550)
+
+          }
+
+          if (random === 12) {
+            const value = [8, 43, 77]
+            const RT = value[Math.floor(Math.random() * value.length)]
+            const RL = value[Math.floor(Math.random() * value.length)] - 2
+
+            console.log(RT, RL)
+            const baku = $(`<img class="baku" src="./imgs/bakudan.png" style="top:${RT}%;left:${RL}%">`)
+            // const baku = $(`<img class="baku" src="./imgs/bakudan.png" style="top:77%;left:75%">`)
+            $('#game').append(baku)
+
+            setTimeout(function () {
+              baku.remove()
+            }, 750)
+
+          }
+
+
+        }
+
+
+        if (score > 15 && !addtime) {
+          time += 10;
+          $('#text-time').text(time);
+          addtime = true
+        }
+
+
+
+        if (score > 30 && !addtime2) {
+          time += 10;
+          $('#text-time').text(time);
+          addtime2 = true
+          $('body').css('background', 'rgb(134, 62, 3)')
+        }
+
+
+
+
+        if (time <= 0) {
+          clearInterval(timer)
+          $(_this).attr('disabled', false)
+          // $('.hina').css('display', 'none')
+          // $('.blood').css('display', 'none')
+          // $('.enel').css('display', 'none')
+          $('#game').empty()
+
+          $()
+
+          if (score > hs.score) {
+            Swal.fire({
+              icon: 'success',
+              title: '時間到',
+              text: `最高分，你得到 ${score} 分`,
+              // input 的 type
+              input: 'text',
+              inputAttributes: {
+                required: true
+              },
+              inputPlaceholder: '請輸入你的名字',
+              validationMessage: '請輸入你的名字',
+              allowOutsideClick: false,
+              allowEscapeKey: false
+            }).then(function (result) {
+              hs.score = score
+              hs.name = result.value
+              $('#text-hsname').text(hs.name)
+              $('#text-hsscore').text(hs.score)
+              localStorage.hs = JSON.stringify(hs)
+            })
+          } else {
+            Swal.fire({
+              icon: 'info',
+              title: '時間到',
+              text: `你得到 ${score} 分`
+            })
+          }
+        }
+
+      }, 1000)
+
+
+    })
+
+
+    $('#game').on('click', '.hina', function () {
+
+      score++
+      $('#text-score').text(score)
+      if (score < 16) {
+
+        $(this).attr('src', `./imgs/blood.png`)
+        $(this).removeClass('hina').addClass('blood')
+      } else {
+        $(this).remove()
+      }
+
+      const _this = this
+      setTimeout(function () {
+        $('.blood').removeClass('blood').addClass('hina')
+      }, 1000)
+
+      setTimeout(function () {
+
+        $(_this).attr('src', `./imgs/animal_koutei_penguin_hina.png`)
+      }, 2500)
+    })
+
+
+    $('#game').on('click', '.enel', function () {
+
+      score = score + 10
+      $('#text-score').text(score)
+
+      $(this).remove()
+
+    })
+
+    $('#game').on('click', '.orange', function () {
+
+      score++
+      $('#text-score').text(score)
+
+      $(this).attr('src', `./imgs/orange_blood.png`)
+      $(this).removeClass('orange').addClass('blood')
+
+      const _this = this
+      setTimeout(function () {
+        $('.blood').removeClass('blood').addClass('orange')
+      }, 1000)
+
+      setTimeout(function () {
+
+        $(_this).attr('src', `./imgs/fruit_orange.png`)
+      }, 2500)
+
+    })
+
+
+    $('#game').on('click', '.nami', function () {
+
+      score = score - 10
+      $('#text-score').text(score)
+
+      $(this).remove()
+    })
+
+
+
+
+
+    $('#game').on('click', '.beef', function () {
+
+      time += 10
+      $('#text-time').text(time)
+
+      $(this).attr('src', `./imgs/beef_blood.png`)
+      $(this).removeClass('beef').addClass('BBlood')
+
+      const _this = this
+      setTimeout(function () {
+        $('.BBlood').remove()
+      }, 2000)
+
+    })
+
+
+    $('#game').on('click', '.baku', function () {
+      clearInterval(timer)
+      $('#game').css('background', 'url(./imgs/bakuhatsu.png)')
+      Swal.fire({
+        icon: 'info',
+        title: '遊戲結束',
+      })
+    })
+
+  </script>
+
+</body>
+<style>
+
+</style>
+
+</html>
